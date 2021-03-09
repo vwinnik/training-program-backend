@@ -1,7 +1,31 @@
-extend type Mutation {
-  createUser: User!
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
 }
 
-type User {
-  id: String!
+input UserInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
+}
+
+extend type Query {
+  users: [User!]!
+  currentUser: User!
+  logInUser(email: String!, password: String!): User!
+}
+
+type CreateuserMutationResult implements MutationResponse {
+  code: String!
+  success: Boolean!
+  message: String!
+  user: User
+}
+
+extend type Mutation {
+  createUser(input: UserInput!): CreateuserMutationResult!
 }
