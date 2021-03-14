@@ -26,12 +26,18 @@ export default (sequelize, DataTypes) => {
     }
   }, { timestamps: false })
 
-  User.Prototype.generateHash = function (password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(9))
+  User.prototype.validatePassword = async function(password, userPassword) {
+    return await bcrypt.compare(password, userPassword)
   }
-  User.Prototype.validatePassword = function (password) {
-    return bcrypt.compareSync(password, this.local.password)
-  }
+
+  User.beforeCreate(async user => {
+    user.password = await user.generateHash(user)
+  })
   
+  User.prototype.generateHash = async function(user) {
+      const saltRounds = 10
+      return await bcrypt.hash(user.password, saltRounds)
+  }
+
   return User
 }
